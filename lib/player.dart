@@ -75,6 +75,13 @@ class _PlayerState extends State<Player> {
     });
   }
 
+  _resume(){
+    setState(() {
+      advancedPlayer.resume();
+      state = PlayerState.playing;
+    });
+  }
+
   _seekToSecond(int second){
     Duration newDuration = Duration(seconds: second);
     advancedPlayer.seek(newDuration);
@@ -155,10 +162,10 @@ class _PlayerState extends State<Player> {
                 InkWell(
                   child: Icon(state == PlayerState.playing ? Icons.pause_circle_outline: Icons.play_circle_outline, color: Colors.blue, size: 60,),
                   onTap: (){
-                    if(state == PlayerState.playing){
-                      _pause();
-                    } else {
-                      _play();
+                    switch(state){
+                      case PlayerState.stopped: _play(); break;
+                      case PlayerState.paused: _resume(); break;
+                      case PlayerState.playing: _pause(); break;
                     }
                   },
                 ),
