@@ -1,5 +1,6 @@
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 
 class Player extends StatefulWidget {
@@ -81,6 +82,8 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width - 20;
+
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(10),
@@ -88,6 +91,15 @@ class _PlayerState extends State<Player> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            SizedBox(
+              width: width,
+              height: width,
+              child: FlareActor('assets/animation/vinyl_player.flr',
+                animation: 'spin',
+                isPaused: !(state == PlayerState.playing),
+              ),
+            ),
+            SizedBox(height: 15,),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
