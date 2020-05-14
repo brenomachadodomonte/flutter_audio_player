@@ -21,7 +21,8 @@ class _PlayerState extends State<Player> {
   PlayerState state = PlayerState.stopped;
   bool autoReplay = false;
   bool _muted = false;
-  double _volume = 1.0;
+  bool _showVolControl = false;
+  double _volume = 0.8;
 
   @override
   void initState() {
@@ -120,19 +121,13 @@ class _PlayerState extends State<Player> {
                 ),
               ],
             ),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                overlayShape: RoundSliderOverlayShape(overlayRadius: 10.0),
-              ),
-              child: Slider(
-                value: _position.inSeconds.toDouble(),
-                onChanged: (double value) {
-                  _seekToSecond(value.toInt());
-                },
-                min: 0.0,
-                max: _duration.inSeconds.toDouble(),
-              ),
+            Slider(
+              value: _position.inSeconds.toDouble(),
+              onChanged: (double value) {
+                _seekToSecond(value.toInt());
+              },
+              min: 0.0,
+              max: _duration.inSeconds.toDouble(),
             ),
             SizedBox(height: 15,),
             Row(
@@ -178,15 +173,65 @@ class _PlayerState extends State<Player> {
                   },
                 ),
                 InkWell(
-                  child: Icon(Icons.volume_up, color: Colors.grey),
+                  child: Icon(Icons.volume_up, color: _showVolControl ? Colors.blue : Colors.grey),
                   onTap: (){
                     setState(() {
-                      autoReplay = !autoReplay;
+                      _showVolControl = !_showVolControl;
                     });
                   },
                 ),
               ],
-            )
+            ),
+            SizedBox(height: 20,),
+            Opacity(
+              opacity: _showVolControl ? 1.0 : 0.0,
+              child: Container(
+                width: width - 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    InkWell(
+                      child: Icon(Icons.volume_mute, color: Colors.grey),
+                      onTap: (){
+                        setState(() {
+                          double newVol = _volume - 0.1;
+                          _volume = (newVol < 0) ? 0 : newVol;
+                          advancedPlayer.setVolume(_volume);
+                        });
+                      },
+                    ),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                        overlayShape: RoundSliderOverlayShape(overlayRadius: 10.0),
+                      ),
+                      child: Slider(
+                        value: _volume,
+                        onChanged: (double value) {
+                          setState(() {
+                            _volume = value;
+                            advancedPlayer.setVolume(value);
+                          });
+                        },
+                        label: '$_volume',
+                        min: 0.0,
+                        max: 1.0,
+                      ),
+                    ),
+                    InkWell(
+                      child: Icon(Icons.volume_up, color: Colors.grey),
+                      onTap: (){
+                        setState(() {
+                          double newVol = _volume + 0.1;
+                          _volume = (newVol > 1) ? 1 : newVol;
+                          advancedPlayer.setVolume(_volume);
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
