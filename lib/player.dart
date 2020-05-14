@@ -100,6 +100,19 @@ class _PlayerState extends State<Player> {
               ),
             ),
             SizedBox(height: 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  '${_position.inMinutes.toString().padLeft(2, '0')}:${(_position.inSeconds % 60).toString().padLeft(2, '0')}',
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
+                Text(
+                  '${(_duration - _position).inMinutes.toString().padLeft(2, '0')}:${((_duration - _position).inSeconds % 60).toString().padLeft(2, '0')}',
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
+              ],
+            ),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
