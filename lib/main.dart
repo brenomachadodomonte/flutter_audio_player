@@ -4,7 +4,7 @@ import 'player.dart';
 void main() => runApp(MaterialApp(
   home: Player(),
   theme: ThemeData(
-    primarySwatch: Colors.red,
+    primarySwatch: Colors.blue,
   ),
   debugShowCheckedModeBanner: false,
 ));

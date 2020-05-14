@@ -19,6 +19,8 @@ class _PlayerState extends State<Player> {
   AudioCache audioCache;
   PlayerState state = PlayerState.stopped;
   bool autoReplay = false;
+  bool _muted = false;
+  double _volume = 1.0;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _PlayerState extends State<Player> {
       }
     });
 
+    advancedPlayer.setVolume(_volume);
   }
 
   //Audio Controls
@@ -71,11 +74,9 @@ class _PlayerState extends State<Player> {
     });
   }
 
-  _resume(){
-    setState(() {
-      advancedPlayer.resume();
-      state = PlayerState.playing;
-    });
+  _seekToSecond(int second){
+    Duration newDuration = Duration(seconds: second);
+    advancedPlayer.seek(newDuration);
   }
 
   @override
@@ -83,8 +84,78 @@ class _PlayerState extends State<Player> {
     return Scaffold(
       body: Container(
         padding: EdgeInsets.all(10),
-        child: Center(
-          child: Text('Comming Soon'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.0),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 10.0),
+              ),
+              child: Slider(
+                value: _position.inSeconds.toDouble(),
+                onChanged: (double value) {
+                  _seekToSecond(value.toInt());
+                },
+                min: 0.0,
+                max: _duration.inSeconds.toDouble(),
+              ),
+            ),
+            SizedBox(height: 15,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                InkWell(
+                  child: Icon(Icons.stop, color: Colors.grey),
+                  onTap: (){
+                    _stop();
+                  },
+                ),
+                InkWell(
+                  child: Icon(Icons.volume_off, color: _muted ? Colors.blue : Colors.grey),
+                  onTap: (){
+                    setState(() {
+                      if(_muted){
+                        advancedPlayer.setVolume(_volume);
+                      } else {
+                        advancedPlayer.setVolume(0);
+                      }
+                      setState(() {
+                        _muted = !_muted;
+                      });
+                    });
+                  },
+                ),
+                InkWell(
+                  child: Icon(state == PlayerState.playing ? Icons.pause_circle_outline: Icons.play_circle_outline, color: Colors.blue, size: 60,),
+                  onTap: (){
+                    if(state == PlayerState.playing){
+                      _pause();
+                    } else {
+                      _play();
+                    }
+                  },
+                ),
+                InkWell(
+                  child: Icon(Icons.loop, color: autoReplay ? Colors.blue : Colors.grey,),
+                  onTap: (){
+                    setState(() {
+                      autoReplay = !autoReplay;
+                    });
+                  },
+                ),
+                InkWell(
+                  child: Icon(Icons.volume_up, color: Colors.grey),
+                  onTap: (){
+                    setState(() {
+                      autoReplay = !autoReplay;
+                    });
+                  },
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );
